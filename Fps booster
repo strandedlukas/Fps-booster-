@@ -1,0 +1,77 @@
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FPSBoostGui"
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Create Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 150)
+frame.Position = UDim2.new(0.5, -100, 0.5, -75)
+frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+frame.BorderSizePixel = 2
+frame.Parent = screenGui
+
+-- Create Label
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(1, 0, 0, 20)
+label.Position = UDim2.new(0, 0, 0, -20)
+label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+label.TextColor3 = Color3.fromRGB(255, 255, 255)
+label.Text = "Made by strandedlukas"
+label.TextSize = 14
+label.Parent = frame
+
+-- Function to make frame movable
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+-- Create Buttons
+local fpsOptions = {60, 120, 210, 330, "MAX"}
+
+for i, fps in ipairs(fpsOptions) do
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0, 180, 0, 25)
+    button.Position = UDim2.new(0.5, -90, 0, i * 30)
+    button.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    button.TextColor3 = Color3.fromRGB(0, 0, 0)
+    button.Text = "FPS BOOST (" .. tostring(fps) .. ")"
+    button.Parent = frame
+
+    button.MouseButton1Click:Connect(function()
+        -- Execute FPS boost here
+        print("FPS Boost activated: " .. fps)
+    end)
+end
